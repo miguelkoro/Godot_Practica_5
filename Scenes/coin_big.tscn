@@ -1,0 +1,112 @@
+[gd_scene load_steps=13 format=3 uid="uid://da5ohx4i0q8e3"]
+
+[ext_resource type="Script" uid="uid://d3yau3r8mtdhu" path="res://Scripts/coin.gd" id="1_w172a"]
+[ext_resource type="Texture2D" uid="uid://bq88485gby06o" path="res://Sprites/Fire Effect and Bullet 16x16.png" id="2_krcp5"]
+[ext_resource type="AudioStream" uid="uid://d3j0sqdh16is7" path="res://Sound/pickupCoin.wav" id="3_68xb4"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kek77"]
+radius = 6.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_272bh"]
+atlas = ExtResource("2_krcp5")
+region = Rect2(160, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5vw27"]
+atlas = ExtResource("2_krcp5")
+region = Rect2(176, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cegan"]
+atlas = ExtResource("2_krcp5")
+region = Rect2(192, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w172a"]
+atlas = ExtResource("2_krcp5")
+region = Rect2(176, 144, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cegan"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_272bh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5vw27")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cegan")
+}],
+"loop": false,
+"name": &"destroy",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w172a")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_e7vmf"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_pmk85"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.46666667, 1.0333333, 1.5666667),
+"transitions": PackedFloat32Array(1.8025008, 1.9318731, 1.8660665, 1.7411015),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -2.31), Vector2(0, 0), Vector2(0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_b85ro"]
+_data = {
+&"RESET": SubResource("Animation_e7vmf"),
+&"idle": SubResource("Animation_pmk85")
+}
+
+[node name="Coin_Big" type="Area2D" groups=["Coin_Big"]]
+script = ExtResource("1_w172a")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_kek77")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, 0)
+sprite_frames = SubResource("SpriteFrames_cegan")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_b85ro")
+}
+autoplay = "idle"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_68xb4")
+bus = &"Effects"
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
